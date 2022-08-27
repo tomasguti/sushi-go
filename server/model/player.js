@@ -2,6 +2,7 @@ const chalk = require('chalk');
 
 class Player {
   username;
+  connection; // websocket reference
   
   availableCards = [];
   playedCards = [];
@@ -11,8 +12,9 @@ class Player {
   makiRollsPoints = 0;
   puddingsPoints = 0;
 
-  constructor(username) {
+  constructor(username, connection) {
     this.username = username;
+    this.connection = connection;
   }
 
   restart() {

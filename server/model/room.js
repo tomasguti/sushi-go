@@ -79,14 +79,41 @@ class Room {
     console.log('Cards rotated');
   }
 
-  getPlayerStatus(username) {
-    const player = this.players.find((player) => player.username === username);
-    return player;
+  broadcastStatus() {
+    this.players.forEach(roomPlayer => {
+      const status =  {
+        code: 'status',
+        players: [],
+        maxPlayers: this.maxPlayers,
+        currentRound: this.currentRound,
+      };
+  
+      this.players.forEach(player => {
+        const playerStatus = {
+          cardsLeft: player.availableCards.length,
+          playedCards: player.playedCards,
+          points: player.points,
+          played: player.played,
+        };
+  
+        if (player.username === roomPlayer.username) {
+          status.availableCards = player.availableCards;
+        }
+  
+        status.players.push(playerStatus);
+      });
+
+      roomPlayer.connection.send(JSON.stringify(status));
+    });
   }
 
-  joinPlayer(username) {
+  joinPlayer(username, connection) {
     if (this.players.length > this.maxPlayers) {
       throw Error(`Room ${this.name} is full.`);
+    }
+
+    if (!username) {
+      throw Error(`Missing username.`);
     }
 
     const player = this.players.find((player) => player.username === username);
@@ -94,10 +121,8 @@ class Room {
       throw Error(`Player ${username} already joined room ${this.name}.`);
     }
 
-    this.players.push(new Player(username));
+    this.players.push(new Player(username, connection));
     console.log(`User ${username} joined room ${this.name}!`);
-    this.players.push(new Player('user2'));
-    this.players.push(new Player('user3'));
 
     if (this.players.length >= this.maxPlayers) {
       this.startRound();
@@ -114,7 +139,7 @@ class Room {
     console.log(`Starting round ${this.currentRound}...`);
 
     const cardsAmountByPlayer = {
-      2: 5,
+      2: 4,
       3: 4,
       4: 8,
       5: 7,
@@ -215,7 +240,7 @@ class Room {
     });
 
     console.log('Waiting 15 seconds before starting again...');
-    setTimeout(this.restart, 15000)
+    setTimeout(() => this.restart(), 15000)
   }
 
   generateCards() {
