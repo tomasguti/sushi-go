@@ -1,14 +1,25 @@
 <template>
   <div class="main">
     <JoinPlayer v-if="!gameData" @join="join" />
+    <PlayersRound v-if="gameData" :players="gameData.players" />
+    <PlayZone
+      v-if="gameData"
+      :availableCards="gameData.availableCards"
+      :played="gameData.played"
+      @play="play"
+    />
+    <ScoreBoard v-if="gameData" :players="gameData.players" />
   </div>
 </template>
 
 <script>
 import JoinPlayer from './JoinPlayer.vue'
+import PlayersRound from './PlayersRound.vue'
+import PlayZone from './PlayZone.vue'
+import ScoreBoard from './ScoreBoard.vue'
 
 export default {
-  components: { JoinPlayer },
+  components: { JoinPlayer, PlayersRound, PlayZone, ScoreBoard },
   name: 'MainGame',
   props: {
     msg: String
@@ -56,8 +67,17 @@ export default {
         this.connection.send(JSON.stringify(data));
       }
     },
+    play(data) {
+      if (this.connection.readyState === WebSocket.OPEN) {
+        // TODO: proper auth
+        data.username = this.gameData.loggedUsername;
+        data.room = this.gameData.roomName;
+        data.code = 'play';
+        this.connection.send(JSON.stringify(data));
+      }
+    },
   },
-  created: function() {
+  created() {
     this.connect();
   }
 }

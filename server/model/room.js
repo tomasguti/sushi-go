@@ -82,6 +82,8 @@ class Room {
   broadcastStatus() {
     this.players.forEach(roomPlayer => {
       const status =  {
+        roomName: this.name,
+        loggedUsername: roomPlayer.username,
         code: 'status',
         players: [],
         maxPlayers: this.maxPlayers,
@@ -90,6 +92,7 @@ class Room {
   
       this.players.forEach(player => {
         const playerStatus = {
+          username: player.username,
           cardsLeft: player.availableCards.length,
           playedCards: player.playedCards,
           points: player.points,
@@ -97,6 +100,7 @@ class Room {
         };
   
         if (player.username === roomPlayer.username) {
+          status.played = player.played;
           status.availableCards = player.availableCards;
         }
   

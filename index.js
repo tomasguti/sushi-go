@@ -122,10 +122,15 @@ ws.on('request', function(request) {
   });
 
   connection.on('close', function(reasonCode, description) {
+      let userDisconnected = 'guest';
       const room = rooms.find(room => room.name === connection.room);
-      // TODO: remove player
-      const player = room.players.find(player => player.username === connection.username);
-      console.log(`${new Date()} Peer ${player.username || 'guest'} ${connection.remoteAddress} disconnected.`);
+      if (room) {
+        const player = room.players.find(player => player.username === connection.username);
+        userDisconnected = player.username || 'guest';
+        // TODO: remove player
+      }
+       
+      console.log(`${new Date()} Peer ${userDisconnected} ${connection.remoteAddress} disconnected.`);
   });
 
   clients.push(connection);

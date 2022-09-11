@@ -11,8 +11,6 @@
 </template>
 
 <script>
-// import axios from 'axios'
-
 export default {
   name: 'JoinPlayer',
   props: {},
@@ -30,25 +28,6 @@ export default {
         this.disableJoin = true;
         this.$emit('join', { username: this.username, room: this.room });
       }
-      /*
-      if (!this.disableJoin) {
-        this.disableJoin = true;
-        axios({
-          method: 'post',
-          url: 'http://localhost:3000/join',
-          data: {
-            username: this.username,
-            room: this.room,
-          }
-        })
-        .then((result) => {
-          this.resultText = result.data;
-        })
-        .catch((error) => {
-          this.resultText = error.response?.data || error.message;
-          this.disableJoin = false;
-        });
-      }*/
     }
   }
 }
